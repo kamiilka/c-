@@ -1,137 +1,119 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace GeometryApp
+namespace ConicSectionsApp
 {
-    //  АБСТРАК БАЗ КЛАС 
-    public abstract class TBody
+    // базовий клас крива другого порядку
+    class ConicSection
     {
-        public abstract double GetSurfaceArea();
-        public abstract double GetVolume();
-    }
+        // поля для коефіцієнтів рівняння: a11*x^2 + 2*a12*xy + a22*y^2 + b1*x + b2*y + c = 0
+        protected double a11;
+        protected double a12;
+        protected double a22;
+        protected double b1;
+        protected double b2;
+        protected double c;
 
-    // ПАРАЛЕЛЕПІПЕД
-    public class TParallelepiped : TBody
-    {
-        public double Width { get; set; }
-        public double Height { get; set; }
-        public double Depth { get; set; }
-
-        public TParallelepiped(double w, double h, double d)
+        // конструктор для задання коефіцієнтів
+        public ConicSection(double a11, double a12, double a22, double b1, double b2, double c)
         {
-            Width = w;
-            Height = h;
-            Depth = d;
+            this.a11 = a11;
+            this.a12 = a12;
+            this.a22 = a22;
+            this.b1 = b1;
+            this.b2 = b2;
+            this.c = c;
         }
 
-        public override double GetSurfaceArea()
+        // метод для виведення коефіцієнтів на екран
+        public virtual void DisplayCoefficients()
         {
-            return 2 * (Width * Height + Height * Depth + Depth * Width);
+            Console.WriteLine("Коефіцієнти кривої другого порядку:");
+            Console.WriteLine($"a11 = {a11}, a12 = {a12}, a22 = {a22}, b1 = {b1}, b2 = {b2}, c = {c}");
+            Console.WriteLine($"Рівняння: {a11}*x^2 + 2*({a12})*xy + {a22}*y^2 + {b1}*x + {b2}*y + {c} = 0");
         }
 
-        public override double GetVolume()
+        // віртуальний метод  чи належить точка (x, y) кривій
+        public virtual bool ContainsPoint(double x, double y)
         {
-            return Width * Height * Depth;
-        }
-    }
-
-    // КУЛЯ
-    public class TBall : TBody
-    {
-        public double Radius { get; set; }
-
-        public TBall(double r)
-        {
-            Radius = r;
-        }
-
-        public override double GetSurfaceArea()
-        {
-            return 4 * Math.PI * Math.Pow(Radius, 2);
-        }
-
-        public override double GetVolume()
-        {
-            return (4.0 / 3.0) * Math.PI * Math.Pow(Radius, 3);
+            double result = a11 * x * x + 2 * a12 * x * y + a22 * y * y + b1 * x + b2 * y + c;
+            return Math.Abs(result) < 0.0001;
         }
     }
 
-
-
-    public class BodyManager<T> where T : TBody
+    // похідний клас Еліпс
+    class Ellipse : ConicSection
     {
-        private List<T> items = new List<T>();
+        private double a;
+        private double b;
 
-        public void Add(T item) => items.Add(item);
-
-
-        public double CalculateTotalSurfaceArea()
+        // x^2/a^2 + y^2/b^2 = 1 рівняння у загальному вигляді буде: (1/a^2)*x^2 + (1/b^2)*y^2 - 1 = 0
+        public Ellipse(double a, double b) : base(1 / (a * a), 0, 1 / (b * b), 0, 0, -1)
         {
-            return items.Sum(item => item.GetSurfaceArea());
+            this.a = a;
+            this.b = b;
         }
 
-
-        public T GetLargestBody()
+        // Перевантажений (перевизначений) метод виведення коефіцієнтів
+        public override void DisplayCoefficients()
         {
-            if (items.Count == 0) return default;
+            Console.WriteLine($"Еліпс із півосями: a = {a}, b = {b}");
+            Console.WriteLine($"Канонічне рівняння: x^2/({a}^2) + y^2/({b}^2) = 1");
+        }
+
+        // Перевантажений (перевизначений) метод перевірки точки спеціально для еліпса
+        public override bool ContainsPoint(double x, double y)
+        {
+            // Підставляємо в канонічне рівняння еліпса: x^2/a^2 + y^2/b^2
+            double result = (x * x) / (a * a) + (y * y) / (b * b);
             
-            T maxBody = items[0];
-            foreach (var item in items)
-            {
-                if (item.GetVolume() > maxBody.GetVolume())
-                {
-                    maxBody = item;
-                }
-            }
-            return maxBody;
+            // Перевіряємо, чи дорівнює результат одиниці (з урахуванням невеликої похибки)
+            return Math.Abs(result - 1) < 0.0001;
         }
-
-
-        public int Count => items.Count;
     }
 
-
+    // Головна програма для демонстрації роботи
     class Program
     {
         static void Main(string[] args)
         {
+            // Налаштування кодування для коректного відображення української мови в консолі
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Console.InputEncoding = System.Text.Encoding.UTF8;
 
+            Console.WriteLine("--- Створення об'єкта класу 'Еліпс' ---");
             
+            // Введення параметрів еліпса
+            Console.Write("Введіть піввісь a: ");
+            double a = Convert.ToDouble(Console.ReadLine());
 
-            BodyManager<TBody> manager = new BodyManager<TBody>();
-            Random rnd = new Random();
+            Console.Write("Введіть піввісь b: ");
+            double b = Convert.ToDouble(Console.ReadLine());
 
-            Console.Write("Введіть кількість пар фігур (паралелепіпед + куля): ");
-            if (!int.TryParse(Console.ReadLine(), out int n) || n <= 0) n = 3; 
+            // Створення об'єкта похідного класу
+            Ellipse myEllipse = new Ellipse(a, b);
+            
+            Console.WriteLine();
+            myEllipse.DisplayCoefficients();
+            Console.WriteLine();
 
-            for (int i = 0; i < n; i++)
+            // Введення координат точки користувачем
+            Console.WriteLine("--- Перевірка належності точки еліпсу ---");
+            Console.Write("Введіть координату x: ");
+            double x = Convert.ToDouble(Console.ReadLine());
+
+            Console.Write("Введіть координату y: ");
+            double y = Convert.ToDouble(Console.ReadLine());
+
+            // Визначення належності точки за допомогою перевизначеного методу
+            if (myEllipse.ContainsPoint(x, y))
             {
-
-                manager.Add(new TParallelepiped(
-                    Math.Round(rnd.NextDouble() * 10 + 1, 2), 
-                    Math.Round(rnd.NextDouble() * 10 + 1, 2), 
-                    Math.Round(rnd.NextDouble() * 10 + 1, 2)));
-
-
-                manager.Add(new TBall(
-                    Math.Round(rnd.NextDouble() * 10 + 1, 2)));
+                Console.WriteLine($"\nРезультат: Точка ({x}; {y}) НАЛЕЖИТЬ даному еліпсу.");
+            }
+            else
+            {
+                Console.WriteLine($"\nРезультат: Точка ({x}; {y}) НЕ НАЛЕЖИТЬ даному еліпсу.");
             }
 
-
-
-            Console.WriteLine($"Всього створено об'єктів: {manager.Count}");
-            Console.WriteLine($"Загальна площа поверхні всіх тіл: {manager.CalculateTotalSurfaceArea():F2}");
-
-            TBody largest = manager.GetLargestBody();
-            if (largest != null)
-            {
-                Console.WriteLine($"Тип найбільшої за об'ємом фігури: {largest.GetType().Name}");
-                Console.WriteLine($"Її об'єм: {largest.GetVolume():F2}");
-            }
-
-            Console.WriteLine("\nНатисніть будь-яку клавішу для виходу...");
             Console.ReadKey();
         }
     }

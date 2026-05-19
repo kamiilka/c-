@@ -26,3 +26,4 @@
 /Users/kamila/go/src/c#/MyApp/obj/Debug/net10.0/MyApp.pdb
 /Users/kamila/go/src/c#/MyApp/obj/Debug/net10.0/MyApp.genruntimeconfig.cache
 /Users/kamila/go/src/c#/MyApp/obj/Debug/net10.0/ref/MyApp.dll
+/Users/kamila/go/src/c#/MyApp/obj/Debug/net10.0/MyApp.sourcelink.json
