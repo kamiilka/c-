@@ -1,120 +1,138 @@
 ﻿using System;
 
-namespace ConicSectionsApp
+namespace GeometryTask
 {
-    // базовий клас крива другого порядку
-    class ConicSection
+    // клас опуклий чотирикутник 
+    class ConvexQuadrilateral
     {
-        // поля для коефіцієнтів рівняння: a11*x^2 + 2*a12*xy + a22*y^2 + b1*x + b2*y + c = 0
-        protected double a11;
-        protected double a12;
-        protected double a22;
-        protected double b1;
-        protected double b2;
-        protected double c;
+        protected double x1, y1, x2, y2, x3, y3, x4, y4;
 
-        // конструктор для задання коефіцієнтів
-        public ConicSection(double a11, double a12, double a22, double b1, double b2, double c)
+        // задання координат вершин 
+        public void SetCoordinates(
+            double x1, double y1,
+            double x2, double y2,
+            double x3, double y3,
+            double x4, double y4)
         {
-            this.a11 = a11;
-            this.a12 = a12;
-            this.a22 = a22;
-            this.b1 = b1;
-            this.b2 = b2;
-            this.c = c;
+            this.x1 = x1;
+            this.y1 = y1;
+            this.x2 = x2;
+            this.y2 = y2;
+            this.x3 = x3;
+            this.y3 = y3;
+            this.x4 = x4;
+            this.y4 = y4;
         }
 
-        // метод для виведення коефіцієнтів на екран
-        public virtual void DisplayCoefficients()
+        // виведення кординат 
+        public virtual void PrintCoordinates()
         {
-            Console.WriteLine("Коефіцієнти кривої другого порядку:");
-            Console.WriteLine($"a11 = {a11}, a12 = {a12}, a22 = {a22}, b1 = {b1}, b2 = {b2}, c = {c}");
-            Console.WriteLine($"Рівняння: {a11}*x^2 + 2*({a12})*xy + {a22}*y^2 + {b1}*x + {b2}*y + {c} = 0");
+            Console.WriteLine("координати вершин чотирикутника:");
+            Console.WriteLine($"A({x1}, {y1})");
+            Console.WriteLine($"B({x2}, {y2})");
+            Console.WriteLine($"C({x3}, {y3})");
+            Console.WriteLine($"D({x4}, {y4})");
         }
 
-        // віртуальний метод  чи належить точка (x, y) кривій
-        public virtual bool ContainsPoint(double x, double y)
+        // обчислення площі за формулою гауса 
+        public virtual double CalculateArea()
         {
-            double result = a11 * x * x + 2 * a12 * x * y + a22 * y * y + b1 * x + b2 * y + c;
-            return Math.Abs(result) < 0.0001;
-        }
-    }
-
-    // похідний клас Еліпс
-    class Ellipse : ConicSection
-    {
-        private double a;
-        private double b;
-
-        // x^2/a^2 + y^2/b^2 = 1 рівняння у загальному вигляді буде: (1/a^2)*x^2 + (1/b^2)*y^2 - 1 = 0
-        public Ellipse(double a, double b) : base(1 / (a * a), 0, 1 / (b * b), 0, 0, -1)
-        {
-            this.a = a;
-            this.b = b;
-        }
-
-        // Перевантажений (перевизначений) метод виведення коефіцієнтів
-        public override void DisplayCoefficients()
-        {
-            Console.WriteLine($"Еліпс із півосями: a = {a}, b = {b}");
-            Console.WriteLine($"Канонічне рівняння: x^2/({a}^2) + y^2/({b}^2) = 1");
-        }
-
-        // Перевантажений (перевизначений) метод перевірки точки спеціально для еліпса
-        public override bool ContainsPoint(double x, double y)
-        {
-            // Підставляємо в канонічне рівняння еліпса: x^2/a^2 + y^2/b^2
-            double result = (x * x) / (a * a) + (y * y) / (b * b);
             
-            // Перевіряємо, чи дорівнює результат одиниці (з урахуванням невеликої похибки)
-            return Math.Abs(result - 1) < 0.0001;
+            double area = (x1 * y2 + x2 * y3 + x3 * y4 + x4 * y1
+                         - y1 * x2 - y2 * x3 - y3 * x4 - y4 * x1) / 2.0;
+
+            return Math.Abs(area);
         }
     }
 
-    // Головна програма для демонстрації роботи
+    // похідний клас трикутник
+    class Triangle : ConvexQuadrilateral
+    {
+        // перевантаження задання координат трикутника  
+        public void SetCoordinates(
+            double x1, double y1,
+            double x2, double y2,
+            double x3, double y3)
+        {
+            this.x1 = x1;
+            this.y1 = y1;
+            this.x2 = x2;
+            this.y2 = y2;
+            this.x3 = x3;
+            this.y3 = y3;
+        }
+
+        // перевизначення виведення координат 
+        public override void PrintCoordinates()
+        {
+            Console.WriteLine("координати вершин трикутника:");
+            Console.WriteLine($"A({x1}, {y1})");
+            Console.WriteLine($"B({x2}, {y2})");
+            Console.WriteLine($"C({x3}, {y3})");
+        }
+
+        // перевизначення площі трикутника 
+        public override double CalculateArea()
+        {
+            double area = Math.Abs(
+                x1 * (y2 - y3) +
+                x2 * (y3 - y1) +
+                x3 * (y1 - y2)
+            ) / 2.0;
+
+            return area;
+        }
+    }
+
     class Program
     {
         static void Main(string[] args)
         {
-            // Налаштування кодування для коректного відображення української мови в консолі
             Console.OutputEncoding = System.Text.Encoding.UTF8;
-            Console.InputEncoding = System.Text.Encoding.UTF8;
 
-            Console.WriteLine("--- Створення об'єкта класу 'Еліпс' ---");
-            
-            // Введення параметрів еліпса
-            Console.Write("Введіть піввісь a: ");
-            double a = Convert.ToDouble(Console.ReadLine());
+            // об'єкт чотирикутник
+            ConvexQuadrilateral quad = new ConvexQuadrilateral();
+            quad.SetCoordinates(0, 0, 4, 0, 4, 3, 0, 3); 
 
-            Console.Write("Введіть піввісь b: ");
-            double b = Convert.ToDouble(Console.ReadLine());
+            quad.PrintCoordinates();
+            Console.WriteLine($"Площа чотирикутника: {quad.CalculateArea()}"); 
 
-            // Створення об'єкта похідного класу
-            Ellipse myEllipse = new Ellipse(a, b);
-            
-            Console.WriteLine();
-            myEllipse.DisplayCoefficients();
             Console.WriteLine();
 
-            // Введення координат точки користувачем
-            Console.WriteLine("--- Перевірка належності точки еліпсу ---");
-            Console.Write("Введіть координату x: ");
-            double x = Convert.ToDouble(Console.ReadLine());
+            // об'єкт трикутник
+            Triangle triangle = new Triangle();
+            triangle.SetCoordinates(0, 0, 4, 0, 2, 3); 
 
-            Console.Write("Введіть координату y: ");
-            double y = Convert.ToDouble(Console.ReadLine());
-
-            // Визначення належності точки за допомогою перевизначеного методу
-            if (myEllipse.ContainsPoint(x, y))
-            {
-                Console.WriteLine($"\nРезультат: Точка ({x}; {y}) НАЛЕЖИТЬ даному еліпсу.");
-            }
-            else
-            {
-                Console.WriteLine($"\nРезультат: Точка ({x}; {y}) НЕ НАЛЕЖИТЬ даному еліпсу.");
-            }
+            triangle.PrintCoordinates();
+            Console.WriteLine($"Площа трикутника: {triangle.CalculateArea()}");  
 
             Console.ReadKey();
         }
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+        // об'єкт чотирикутник
+        ConvexQuadrilateral quad = new ConvexQuadrilateral();
+        quad.SetCoordinates(0, 0, 4, 0, 4, 3, 0, 3); 
+
+        quad.PrintCoordinates();
+        Console.WriteLine($"Площа чотирикутника: {quad.CalculateArea()}"); 
+
+        Console.WriteLine();
+
+        // об'єкт трикутник
+        Triangle triangle = new Triangle();
+        triangle.SetCoordinates(0, 0, 4, 0, 2, 3); 
+
+        triangle.PrintCoordinates();
+        Console.WriteLine($"Площа трикутника: {triangle.CalculateArea()}");  
+
+        Console.ReadKey();
     }
 }
