@@ -44,6 +44,47 @@ namespace GeometryTask
             return Math.Abs(area);
         }
     }
+    class ConvexQuadrilateral1
+    {
+        protected double x1, y1, x2, y2, x3, y3, x4, y4;
+
+        // задання координат вершин 
+        public void SetCoordinates(
+            double x1, double y1,
+            double x2, double y2,
+            double x3, double y3,
+            double x4, double y4)
+        {
+            this.x1 = x1;
+            this.y1 = y1;
+            this.x2 = x2;
+            this.y2 = y2;
+            this.x3 = x3;
+            this.y3 = y3;
+            this.x4 = x4;
+            this.y4 = y4;
+        }
+
+        // виведення кординат 
+        public virtual void PrintCoordinates()
+        {
+            Console.WriteLine("координати вершин чотирикутника:");
+            Console.WriteLine($"A({x1}, {y1})");
+            Console.WriteLine($"B({x2}, {y2})");
+            Console.WriteLine($"C({x3}, {y3})");
+            Console.WriteLine($"D({x4}, {y4})");
+        }
+
+        // обчислення площі за формулою гауса 
+        public virtual double CalculateArea()
+        {
+            
+            double area = (x1 * y2 + x2 * y3 + x3 * y4 + x4 * y1
+                         - y1 * x2 - y2 * x3 - y3 * x4 - y4 * x1) / 2.0;
+
+            return Math.Abs(area);
+        }
+    }   
 
     // похідний клас трикутник
     class Triangle : ConvexQuadrilateral
