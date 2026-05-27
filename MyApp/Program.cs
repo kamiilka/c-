@@ -43,6 +43,10 @@ namespace GeometryTask
 
             return Math.Abs(area);
         }
+        public void PrintArea()
+        {
+            Console.WriteLine($"Площа чотирикутника: {CalculateArea()}");
+        }
     }
     class ConvexQuadrilateral1
     {
