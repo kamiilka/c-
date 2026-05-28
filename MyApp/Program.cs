@@ -2,6 +2,31 @@
 
 namespace GeometryTask
 {
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+            // об'єкт чотирикутник
+            ConvexQuadrilateral quad = new ConvexQuadrilateral();
+            quad.SetCoordinates(0, 0, 4, 0, 4, 3, 0, 3); 
+
+            quad.PrintCoordinates();
+            Console.WriteLine($"Площа чотирикутника: {quad.CalculateArea()}"); 
+
+            Console.WriteLine();
+
+            // об'єкт трикутник
+            Triangle triangle = new Triangle();
+            triangle.SetCoordinates(0, 0, 4, 0, 2, 3); 
+
+            triangle.PrintCoordinates();
+            Console.WriteLine($"Площа трикутника: {triangle.CalculateArea()}");  
+
+            Console.ReadKey();
+        }
+    }
     // клас опуклий чотирикутник 
     class ConvexQuadrilateral
     {
