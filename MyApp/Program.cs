@@ -58,6 +58,14 @@ namespace GeometryTask
             Console.WriteLine($"C({x3}, {y3})");
             Console.WriteLine($"D({x4}, {y4})");
         }
+        public void PrintCoordinates1()
+        {
+            Console.WriteLine("координати вершин чотирикутника:");
+            Console.WriteLine($"A({x1}, {y1})");
+            Console.WriteLine($"B({x2}, {y2})");
+            Console.WriteLine($"C({x3}, {y3})");
+            Console.WriteLine($"D({x4}, {y4})");
+        }
 
         // обчислення площі за формулою гауса 
         public virtual double CalculateArea()
